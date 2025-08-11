@@ -4,7 +4,6 @@ import com.spring.authservice.dto.request.*;
 import com.spring.authservice.dto.response.AuthenticationResponseDto;
 import com.spring.authservice.dto.response.UserResponseDto;
 import com.spring.authservice.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,13 +11,12 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    @Autowired
     public UserServiceImpl(UserRepository userRepository){
         this.userRepository = userRepository;
     }
     @Override
     public void register(RegisterDto registerDto) {
-
+        
     }
 
     @Override
