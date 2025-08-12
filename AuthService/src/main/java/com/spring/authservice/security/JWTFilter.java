@@ -2,6 +2,7 @@ package com.spring.authservice.security;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.spring.authservice.repository.TokenBlacklistRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,10 +20,13 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtils jwtUtils;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Autowired
-    public JWTFilter(JWTUtils jwtUtils){
+    public JWTFilter(JWTUtils jwtUtils,
+                     TokenBlacklistRepository tokenBlacklistRepository){
         this.jwtUtils = jwtUtils;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,6 +41,10 @@ public class JWTFilter extends OncePerRequestFilter {
             try {
                 if(!jwtUtils.isTokenValid(jwt)){
                     throw new JWTVerificationException("Token is expired or invalid");
+                }
+
+                if(tokenBlacklistRepository.existsByToken(jwt)){
+                    throw new JWTVerificationException("Token is blacklisted");
                 }
 
                 String email = jwtUtils.extractEmail(jwt);

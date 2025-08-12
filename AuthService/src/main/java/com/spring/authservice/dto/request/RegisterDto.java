@@ -30,4 +30,7 @@ public class RegisterDto {
 
     @NotBlank
     private String confirmPassword;
+
+    @NotBlank
+    private String phone;
 }

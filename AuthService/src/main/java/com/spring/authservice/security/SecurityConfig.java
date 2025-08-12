@@ -21,10 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JWTFilter jwtFilter;
+    private final MyUserDetailsService uds;
 
     @Autowired
-    public SecurityConfig(JWTFilter jwtFilter){
+    public SecurityConfig(JWTFilter jwtFilter,
+                          MyUserDetailsService uds){
         this.jwtFilter = jwtFilter;
+        this.uds = uds;
     }
 
     @Bean
@@ -32,6 +35,7 @@ public class SecurityConfig {
         return http.csrf(CsrfConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .cors(cors -> {})
+                .userDetailsService(uds)
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(
