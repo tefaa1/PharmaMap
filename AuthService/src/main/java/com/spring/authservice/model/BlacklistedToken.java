@@ -2,6 +2,7 @@ package com.spring.authservice.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokensBlacklist {
+@Builder
+public class BlacklistedToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

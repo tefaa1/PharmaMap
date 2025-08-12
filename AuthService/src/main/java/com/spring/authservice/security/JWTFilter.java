@@ -1,8 +1,7 @@
 package com.spring.authservice.security;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.spring.authservice.repository.TokenBlacklistRepository;
+import com.spring.authservice.repository.BlacklistedTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,11 +19,11 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtils jwtUtils;
-    private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final BlacklistedTokenRepository tokenBlacklistRepository;
 
     @Autowired
     public JWTFilter(JWTUtils jwtUtils,
-                     TokenBlacklistRepository tokenBlacklistRepository){
+                     BlacklistedTokenRepository tokenBlacklistRepository){
         this.jwtUtils = jwtUtils;
         this.tokenBlacklistRepository = tokenBlacklistRepository;
     }

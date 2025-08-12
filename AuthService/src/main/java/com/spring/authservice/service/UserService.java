@@ -8,9 +8,10 @@ public interface UserService {
 
     void register(RegisterDto registerDto);
     AuthenticationResponseDto login(LoginDto loginDto);
+    void logout(String accessToken, String refreshToken);
     AuthenticationResponseDto refreshAccessToken(RefreshTokenDto refreshTokenDto);
     void changePassword (ChangePasswordDto changeDto);
     void changeTheName(ChangeNameDto changeName);
-    UserResponseDto getTheCurrentUser();
-    void deleteTheCurrentUser();
+    void deleteTheCurrentUser(String accessToken, String refreshToken);
+    UserResponseDto getTheCurrentUserInfo();
 }
