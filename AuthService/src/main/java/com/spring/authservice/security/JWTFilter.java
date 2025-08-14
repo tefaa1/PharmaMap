@@ -41,20 +41,16 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        System.out.println("before");
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-            System.out.println("after_if");
             String jwt = authHeader.substring(7);
 
             try {
                 if (!jwtUtils.isTokenValid(jwt)) {
                     throw new JWTVerificationException("Token is expired or invalid");
                 }
-                System.out.println("after_if2");
                 if (tokenBlacklistRepository.existsByToken(jwt)) {
                     throw new JWTVerificationException("Token is blacklisted");
                 }
-                System.out.println("after_if3");
                 String email = jwtUtils.extractEmail(jwt);
 
                 UserDetails userDetails = myUserDetailsService.loadUserByUsername(email);
@@ -65,7 +61,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-                System.out.println("after_if4");
             } catch (TokenExpiredException ex) {
                 throw new AuthenticationServiceException("JWT token expired");
             } catch (JWTVerificationException ex) {
