@@ -64,18 +64,27 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(authenticationResponseDto,
+                new ApiResponse<>(null,
                         "successful login", HttpStatus.OK.value())
         );
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(HttpServletRequest request,HttpServletResponse response) {
 
         String accessToken = servletUtils.extractAccessToken(request);
         String refreshToken = servletUtils.extractRefreshToken(request);
 
         authService.logout(accessToken, refreshToken);
+
+        // Invalidate refresh token cookie by setting same name and MaxAge=0
+        Cookie cookie = new Cookie("refreshToken","");
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true);   in the production
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         return ResponseEntity.ok(
                 new ApiResponse<>(null,
                         "successful login", HttpStatus.OK.value())

@@ -1,6 +1,7 @@
 package com.spring.authservice.annotation;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,4 +14,6 @@ import java.lang.annotation.Target;
 public @interface PasswordMatches {
 
     String message()default "Password and confirm password do not match";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }

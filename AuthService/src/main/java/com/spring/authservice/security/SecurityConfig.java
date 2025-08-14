@@ -22,12 +22,15 @@ public class SecurityConfig {
 
     private final JWTFilter jwtFilter;
     private final MyUserDetailsService uds;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     @Autowired
     public SecurityConfig(JWTFilter jwtFilter,
-                          MyUserDetailsService uds){
+                          MyUserDetailsService uds,
+                          JwtAuthEntryPoint jwtAuthEntryPoint){
         this.jwtFilter = jwtFilter;
         this.uds = uds;
+        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
     }
 
     @Bean
@@ -36,12 +39,22 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .cors(cors -> {})
                 .userDetailsService(uds)
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(
-                                (request, response, authException) ->
-                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
-                        )
+                .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers("/api/auth/logout").authenticated()
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception.
+                        authenticationEntryPoint(jwtAuthEntryPoint)
                 )
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
