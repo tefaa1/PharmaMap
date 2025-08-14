@@ -5,7 +5,6 @@ import com.spring.authservice.dto.response.AuthenticationResponseDto;
 import com.spring.authservice.dto.response.UserResponseDto;
 
 public interface UserService {
-    AuthenticationResponseDto refreshAccessToken(RefreshTokenDto refreshTokenDto);
     void changePassword (ChangePasswordDto changeDto);
     void changeTheName(ChangeNameDto changeName);
     void deleteTheCurrentUser(String accessToken, String refreshToken);

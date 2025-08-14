@@ -39,29 +39,6 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public AuthenticationResponseDto refreshAccessToken(RefreshTokenDto refreshTokenDto) {
-
-        String refreshToken = refreshTokenDto.getRefreshToken();
-
-        if(!jwtUtils.isTokenValid(refreshToken)){
-            throw new JWTVerificationException("Token expired or invalid");
-        }
-
-        if(jwtUtils.isAccessToken(refreshToken)){
-            throw new JWTVerificationException("Access token is not allowed here");
-        }
-
-        if(jwtUtils.isTokenBlacklisted(refreshToken)){
-            throw new JWTVerificationException("Token is Blacklisted");
-        }
-
-        String email = jwtUtils.extractEmail(refreshToken);
-        String accessToken = jwtUtils.generateAccessToken(email);
-
-        return new AuthenticationResponseDto(accessToken,refreshToken);
-    }
-
-    @Override
     public void changePassword(ChangePasswordDto changeDto) {
         User user = getTheCurrentUser();
 

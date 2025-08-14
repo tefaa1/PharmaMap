@@ -1,6 +1,8 @@
 package com.spring.authservice.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.spring.authservice.dto.request.LoginDto;
+import com.spring.authservice.dto.request.RefreshTokenDto;
 import com.spring.authservice.dto.request.RegisterDto;
 import com.spring.authservice.dto.response.AuthenticationResponseDto;
 import com.spring.authservice.mapper.UserMapper;
@@ -72,5 +74,25 @@ public class AuthServiceImpl implements AuthService{
 
         jwtUtils.blacklistToken(accessToken);
         jwtUtils.blacklistToken(refreshToken);
+    }
+
+    @Override
+    public String refreshAccessToken(String refreshToken) {
+
+        if(!jwtUtils.isTokenValid(refreshToken)){
+            throw new JWTVerificationException("Token expired or invalid");
+        }
+
+        if(jwtUtils.isAccessToken(refreshToken)){
+            throw new JWTVerificationException("Access token is not allowed here");
+        }
+
+        if(jwtUtils.isTokenBlacklisted(refreshToken)){
+            throw new JWTVerificationException("Token is Blacklisted");
+        }
+
+        String email = jwtUtils.extractEmail(refreshToken);
+
+        return jwtUtils.generateAccessToken(email);
     }
 }

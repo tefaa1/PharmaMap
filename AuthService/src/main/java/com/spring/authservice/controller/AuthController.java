@@ -6,7 +6,8 @@ import com.spring.authservice.dto.response.ApiResponse;
 import com.spring.authservice.dto.response.AuthenticationResponseDto;
 import com.spring.authservice.security.JWTUtils;
 import com.spring.authservice.service.AuthService;
-import com.spring.authservice.service.UserService;
+import com.spring.authservice.utils.ServletUtils;
+import jakarta.servlet.Servlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,10 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,17 +23,20 @@ public class AuthController {
 
     private final AuthService authService;
     private final JWTUtils jwtUtils;
+    private final ServletUtils servletUtils;
 
     @Autowired
     public AuthController(AuthService authService,
-                          JWTUtils jwtUtils){
+                          JWTUtils jwtUtils,
+                          ServletUtils servletUtils) {
 
         this.authService = authService;
         this.jwtUtils = jwtUtils;
+        this.servletUtils = servletUtils;
     }
 
     @PostMapping("/register")
-    ResponseEntity<?>register(@RequestBody @Valid RegisterDto registerDto){
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto registerDto) {
 
         authService.register(registerDto);
         return ResponseEntity.ok(
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<?>login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
 
         AuthenticationResponseDto authenticationResponseDto = authService.login(loginDto);
 
@@ -57,7 +58,7 @@ public class AuthController {
 
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        // cookie.setSecure(true);   in the production
         cookie.setPath("/");
         cookie.setMaxAge(refreshTokenExpiryInSeconds);
         response.addCookie(cookie);
@@ -69,35 +70,28 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    ResponseEntity<?>logout(HttpServletRequest request){
+    public ResponseEntity<?> logout(HttpServletRequest request) {
 
-        String accessToken = extractAccessToken(request);
-        String refreshToken = extractRefreshToken(request);
+        String accessToken = servletUtils.extractAccessToken(request);
+        String refreshToken = servletUtils.extractRefreshToken(request);
 
-        authService.logout(accessToken,refreshToken);
+        authService.logout(accessToken, refreshToken);
         return ResponseEntity.ok(
                 new ApiResponse<>(null,
-                        "successful login",HttpStatus.OK.value())
+                        "successful login", HttpStatus.OK.value())
         );
     }
-    private String extractAccessToken(HttpServletRequest request){
 
-        String authHeader = request.getHeader("Authorization");
-        return authHeader.substring(7);
-    }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
 
-    private String extractRefreshToken(HttpServletRequest request){
+        String refreshToken = servletUtils.extractRefreshToken(request);
+        String accessToken = authService.refreshAccessToken(refreshToken);
 
-        Cookie[]cookies = request.getCookies();
-        String refreshToken = "";
-
-        for (Cookie cookie : cookies) {
-            if("refreshToken".equals(cookie.getName())){
-                refreshToken = cookie.getValue();
-                break;
-            }
-        }
-
-        return refreshToken;
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        return ResponseEntity.ok(
+                new ApiResponse<>(null,
+                        "successful refresh", HttpStatus.OK.value())
+        );
     }
 }
