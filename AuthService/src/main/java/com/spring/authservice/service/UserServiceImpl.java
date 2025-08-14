@@ -37,42 +37,6 @@ public class UserServiceImpl implements UserService{
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
-    @Override
-    public void register(RegisterDto registerDto) {
-
-        if(userRepository.existsByEmail(registerDto.getEmail())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already in use");
-        }
-
-        User user = userMapper.toEntity(registerDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
-    @Override
-    public AuthenticationResponseDto login(LoginDto loginDto) {
-
-        UsernamePasswordAuthenticationToken authToken
-                = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword());
-
-        authenticationManager.authenticate(authToken);
-
-        String accessToken = jwtUtils.generateAccessToken(loginDto.getEmail());
-        String refreshToken = jwtUtils.generateRefreshToken(loginDto.getEmail());
-
-        return AuthenticationResponseDto
-                .builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
-
-    @Override
-    public void logout(String accessToken, String refreshToken) {
-
-        jwtUtils.blacklistToken(accessToken);
-        jwtUtils.blacklistToken(refreshToken);
-    }
 
     @Override
     public AuthenticationResponseDto refreshAccessToken(RefreshTokenDto refreshTokenDto) {

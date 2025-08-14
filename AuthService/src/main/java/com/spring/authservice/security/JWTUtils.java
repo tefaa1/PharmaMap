@@ -6,9 +6,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.spring.authservice.dto.response.ApiResponse;
 import com.spring.authservice.model.BlacklistedToken;
 import com.spring.authservice.repository.BlacklistedTokenRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -51,6 +56,12 @@ public class JWTUtils {
 
         DecodedJWT jwt = getVerifier().verify(token);
         return jwt.getClaim("email").asString();
+    }
+
+    public long getRemainingMillis(String token){
+
+        DecodedJWT jwt = getVerifier().verify(token);
+        return (jwt.getExpiresAt().getTime() - System.currentTimeMillis());
     }
 
     public Boolean isTokenValid(String token) {
