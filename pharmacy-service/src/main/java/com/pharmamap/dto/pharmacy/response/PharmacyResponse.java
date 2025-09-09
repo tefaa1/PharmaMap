@@ -1,25 +1,26 @@
-package com.pharmamap.dto.request;
+package com.pharmamap.dto.pharmacy.response;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
+import com.pharmamap.dto.category.response.CategoryResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PharmacyUpdateRequest {
+public class PharmacyResponse {
 
-    @NotBlank
+    private Long id;
+    
     private String name;
 
     private String description;
 
-    @NotBlank
     private String phone;
 
-    @NotBlank
     private String address;
 
+    private Set<CategoryResponse> categorySet;
 }

@@ -33,7 +33,7 @@ public class Pharmacy {
     private String address;
 
     @Column(nullable = false)
-    private Long userId;
+    private String userId;
 
     @Column(nullable = false)
     private Double latitude;

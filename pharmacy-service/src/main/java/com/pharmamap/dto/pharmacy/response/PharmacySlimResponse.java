@@ -1,21 +1,25 @@
-package com.pharmamap.dto.response;
+package com.pharmamap.dto.pharmacy.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponse {
+public class PharmacySlimResponse {
 
     private Long id;
-
+    
     private String name;
 
     private String description;
 
-    private Set<MedicineResponse>medicineSet;
+    private String phone;
+
+    private String address;
+    
+    private Double latitude;
+    
+    private Double longitude;
 }

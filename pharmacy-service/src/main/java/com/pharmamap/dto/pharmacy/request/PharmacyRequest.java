@@ -1,6 +1,5 @@
-package com.pharmamap.dto.request;
+package com.pharmamap.dto.pharmacy.request;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

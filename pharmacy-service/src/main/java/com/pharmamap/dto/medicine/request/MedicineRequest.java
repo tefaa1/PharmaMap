@@ -1,4 +1,4 @@
-package com.pharmamap.dto.request;
+package com.pharmamap.dto.medicine.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
