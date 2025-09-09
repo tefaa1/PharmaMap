@@ -11,6 +11,7 @@
     <modules>
         <module>discovery-server</module>
         <module>pharmacy-service</module>
+        <module>order-service</module>
     </modules>
 
     <parent>
